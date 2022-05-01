@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const connStr = "postgres://byzmlmbu:TLzV3mOtDNL4jyy-YyoZRz6i3G-1cVs_@tantor.db.elephantsql.com:5432/byzmlmbu"
+const connStr = "postgres://zmlmbu:123456@tantor.db.elephantsql.com:5432/zmlmbu"
 const layout = "2006-01-02"
 
 // DalTest - fields names are similar to one in datbase
