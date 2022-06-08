@@ -9,19 +9,19 @@ import (
 var prepstmts = make(map[int]*sqlx.Stmt)
 var prepstmtsS = make(map[string]*sqlx.Stmt)
 
-//MaxPrepId gives ID of last-most prepared statement
-func (p *Dbal) MaxPrepId() int {
-	return len(prepstmts)
-}
+// //MaxPrepId gives ID of last-most prepared statement
+// func (p *Dbal) MaxPrepId() int {
+// 	return len(prepstmts)
+// }
 
 //Prepare create prepared statement for given query
-func (p *Dbal) Prepare(sql string) (int, error) {
+func (p *Dbal) Prepare(sql string, id int) (int, error) {
 	// create Prepared statement
 	s, err := p.Db.(DbWrapper).Preparex(sql)
 	if err != nil {
 		return -1, err
 	}
-	id := len(prepstmts)
+	//id := len(prepstmts)
 	prepstmts[id] = s
 	return id, nil
 }
