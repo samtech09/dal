@@ -14,6 +14,24 @@ var prepstmtsS = make(map[string]*sqlx.Stmt)
 // 	return len(prepstmts)
 // }
 
+//PrepToStr gives given PreparedStatement as string
+func (p *Dbal) PrepToStr(id int) string {
+	stmt, ok := prepstmts[id]
+	if !ok {
+		return "invalid id"
+	}
+	return fmt.Sprintln(stmt.Stmt)
+}
+
+//PrepToStrEx gives given PreparedStatement as string
+func (p *Dbal) PrepToStrEx(key string) string {
+	stmt, ok := prepstmtsS[key]
+	if !ok {
+		return "invalid key"
+	}
+	return fmt.Sprintln(stmt.Stmt)
+}
+
 //Prepare create prepared statement for given query
 func (p *Dbal) Prepare(sql string, id int) (int, error) {
 	// create Prepared statement
