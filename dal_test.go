@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 const connStr = "postgres://zmlmbu:123456@tantor.db.elephantsql.com:5432/zmlmbu"
@@ -19,6 +19,7 @@ type DalTest struct {
 	meta      bool `dal:"daltest"`
 	ID        int  `dal:"pk"`
 	Name      string
+	Score     pq.Int64Array
 	Dob       time.Time
 	CreatedOn time.Time `dal:"noupdate"`
 	Approved  bool
@@ -213,6 +214,7 @@ func TestNonQuery(t *testing.T) {
 	sql = "Create table daltest( " +
 		"ID serial not null," +
 		"name character varying(50) NOT NULL," +
+		"score int[] NULL," +
 		"dob date NOT NULL," +
 		"createdon timestamp without time zone NOT NULL," +
 		"approved boolean NOT NULL default false" +
@@ -258,6 +260,29 @@ func TestNonQuery(t *testing.T) {
 
 func TestInsertStructSingle(t *testing.T) {
 	fmt.Println("\n\nTestInsertStructSingle ***")
+	row := DalTest{}
+	row.Name = "Single-Struct"
+	row.Dob, _ = time.Parse(layout, "2010-10-10")
+	row.CreatedOn, _ = time.Parse(layout, "2016-07-15")
+	row.Score = pq.Int64Array{3, 4}
+
+	// Try to insrt data through struct
+	err := dbal.InsertStruct(&row, false)
+	if err != nil {
+		t.Errorf("\tInsertStructSingle failed. %v", err)
+	}
+
+	//fmt.Printf("Returned ID: %d\n", toIntx(id))
+	//fmt.Printf("\tStruct: %v\n", row)
+
+	// Id field in struct must be non zero
+	if row.ID < 1 {
+		t.Errorf("\n\tExpected: %s\tReceived: %d", ">0", row.ID)
+	}
+}
+
+func TestInsertStructSingleNoTime(t *testing.T) {
+	fmt.Println("\n\nTestTestInsertStructSingleNoTime ***")
 	row := DalTestNoTime{}
 	row.Name = "Single-Struct"
 	// row.Dob, _ = time.Parse(layout, "2010-10-10")
@@ -269,7 +294,7 @@ func TestInsertStructSingle(t *testing.T) {
 	// Try to insrt data through struct
 	err := dbal.InsertStruct(&row, false)
 	if err != nil {
-		t.Errorf("\tInsertStructSingle failed. %v", err)
+		t.Errorf("\tTestInsertStructSingleNoTime failed. %v", err)
 	}
 
 	//fmt.Printf("Returned ID: %d\n", toIntx(id))
@@ -394,7 +419,7 @@ func TestQueryStruct(t *testing.T) {
 	fmt.Println("\n\nTestQueryStruct ***")
 
 	var daltest []*DalTest
-	err := dbal.QueryStruct(&daltest, "name like $1", "Slice%")
+	err := dbal.QueryStruct(&daltest, "name like $1", "Single%")
 	if err != nil {
 		t.Errorf("\tQueryStruct failed. %v", err)
 	}
@@ -427,7 +452,7 @@ func TestQueryStructNoTime(t *testing.T) {
 }
 
 func TestQueryStructTimeUnix(t *testing.T) {
-	fmt.Println("\n\nTestQueryStructNoTime ***")
+	fmt.Println("\n\nTestQueryStructTimeUnix ***")
 
 	var daltest []*DalTestTimeUnix
 	err := dbal.QueryStruct(&daltest, "name like $1", "Slice%")
