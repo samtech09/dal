@@ -90,6 +90,17 @@ func (p *Dbal) Delete(table, condition string, args ...interface{}) (rowsAffecte
 	return
 }
 
+// NamedExec execute query and replace named parameters with value from args.
+func (p *Dbal) NamedExec(query string, args ...interface{}) (rowsAffected int64, err error) {
+	rowsAffected = -1
+	res, err := p.rawDb.NamedExec(query, args)
+	if err != nil {
+		return 0, err
+	}
+	rowsAffected, err = res.RowsAffected()
+	return rowsAffected, nil
+}
+
 // Scalar executes given query and return value of first column from first row.
 // It will be good to pass sql that only select single column, single row
 // instead of loading thousands of rows and then discarding them.
