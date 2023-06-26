@@ -98,7 +98,18 @@ func (p *Dbal) NamedExec(query string, args ...interface{}) (rowsAffected int64,
 		return 0, err
 	}
 	rowsAffected, err = res.RowsAffected()
-	return rowsAffected, nil
+	return rowsAffected, err
+}
+
+// NamedExec execute query and replace named parameters with value from args.
+func (p *Dbal) Exec(query string, args ...interface{}) (rowsAffected int64, err error) {
+	rowsAffected = -1
+	res, err := p.rawDb.Exec(query, args)
+	if err != nil {
+		return 0, err
+	}
+	rowsAffected, err = res.RowsAffected()
+	return rowsAffected, err
 }
 
 // Scalar executes given query and return value of first column from first row.
