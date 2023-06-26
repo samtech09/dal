@@ -104,7 +104,7 @@ func (p *Dbal) NamedExec(query string, args ...interface{}) (rowsAffected int64,
 // NamedExec execute query and replace named parameters with value from args.
 func (p *Dbal) Exec(query string, args ...interface{}) (rowsAffected int64, err error) {
 	rowsAffected = -1
-	res, err := p.rawDb.Exec(query, args)
+	res, err := p.rawDb.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
